@@ -1,5 +1,8 @@
+#include "state.h"
+
 #define CONTROL_PIN LED_BUILTIN 
 
+unsigned char state;
 unsigned long flashingPeriodMs;
 unsigned long lastFlashTimeMs;
 
@@ -7,25 +10,42 @@ void setup() {
   pinMode(CONTROL_PIN, OUTPUT);
   digitalWrite(CONTROL_PIN, LOW);
 
-  startFlashingHz(10);
+  state = STATE_REQUIRES_SINGLE_FLASH;
 }
 
 void loop() {
-  flashingTick();
+  operate();
 }
 
 /**
- * Sets up flashing period for given BMP value
+ * Performs action according to the state
  */
-void startFlashingBpm(unsigned short bmp) {
-  flashingPeriodMs = round(1000.0 / (bmp / 60.0));
+void operate() {
+  switch(state) {
+    case STATE_REQUIRES_SINGLE_FLASH:
+      singleFlash();
+      state = STATE_IDLE;
+      break;
+
+    case STATE_CONTINOUS_FLASHING:
+      flashingTick();
+      break;
+  }
 }
 
 /**
- * Sets up flashing period for given Hz value
+ * Sets up continous flashing for given BPM value
+ */
+void startFlashingBpm(unsigned short bpm) {
+  startFlashingHz(round(bpm / 60.0));
+}
+
+/**
+ * Sets up continous flashing for given Hz value
  */
 void startFlashingHz(unsigned char hz) {
   flashingPeriodMs = round(1000.0 / hz);
+  state = STATE_CONTINOUS_FLASHING;
 }
 
 /**
@@ -34,9 +54,6 @@ void startFlashingHz(unsigned char hz) {
  */
 void flashingTick() {
   unsigned long currentTimeMs = millis();
-  
-  
-
   unsigned long delta = currentTimeMs - lastFlashTimeMs;
   
   if (delta < 0) {
