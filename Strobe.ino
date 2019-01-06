@@ -1,7 +1,7 @@
 #include "state.h"
 #include "command.h"
 
-#define CONTROL_PIN LED_BUILTIN 
+#define CONTROL_PIN 8 
 
 unsigned char state;
 unsigned long flashingPeriodMs;
@@ -92,7 +92,8 @@ void operate() {
  * Sets up continous flashing for given BPM value
  */
 void startFlashingBpm(unsigned short bpm) {
-  startFlashingHz(round(bpm / 60.0));
+  flashingPeriodMs = round(1000.0 / (bpm / 60.0));
+  state = STATE_CONTINOUS_FLASHING;
 }
 
 /**
@@ -134,7 +135,10 @@ void singleFlash() {
  */
 void singleFlash(unsigned long currentTimeMs) {
   lastFlashTimeMs = currentTimeMs;
+  digitalWrite(LED_BUILTIN, HIGH);
   digitalWrite(CONTROL_PIN, HIGH);
-  delay(1);
+  delay(20);
+  digitalWrite(LED_BUILTIN, LOW);
   digitalWrite(CONTROL_PIN, LOW);
+  delay(10);
 }
