@@ -1,4 +1,5 @@
 #include "state.h"
+#include "command.h"
 
 #define CONTROL_PIN LED_BUILTIN 
 
@@ -10,11 +11,65 @@ void setup() {
   pinMode(CONTROL_PIN, OUTPUT);
   digitalWrite(CONTROL_PIN, LOW);
 
-  state = STATE_REQUIRES_SINGLE_FLASH;
+  Serial.begin(9600);
+  Serial.setTimeout(10);
 }
 
 void loop() {
+  readCommand();
   operate();
+}
+
+void readCommand() {
+  if (Serial.available()) {
+    unsigned char buffer[64];
+    size_t length = Serial.readBytes(buffer, 64);
+    parseCommand(buffer, length);
+  }
+}
+
+void parseCommand(unsigned char *data, unsigned short length) {
+  if (length == 0) {
+    return;
+  }
+
+  unsigned char command = *data;
+  switch (command) {
+    case COMMAND_SINGLE_FLASH:
+      state = STATE_REQUIRES_SINGLE_FLASH;
+      return;
+    case COMMAND_STOP_ALL:
+      state = STATE_IDLE;
+      return;
+  }
+  
+  unsigned short payloadLength = length - 1;
+  
+  switch (command) {  
+   case COMMAND_FLASHING_HZ:
+      parseFlashingHzCommand(data + 1, payloadLength);
+      break;
+    case COMMAND_FLASHING_BPM:
+      parseFlashingBpmCommand(data + 1, payloadLength);
+      break;
+  }
+}
+
+void parseFlashingHzCommand(unsigned char *payload, unsigned short length) {
+  if (length != 1) {
+    return;
+  }
+
+  startFlashingHz(*payload);
+}
+
+void parseFlashingBpmCommand(unsigned char *payload, unsigned short length) {
+  if (length != 2) {
+    return;
+  }
+  
+  unsigned short bpm = *((unsigned short*) payload); 
+  startFlashingBpm(bpm);
 }
 
 /**
