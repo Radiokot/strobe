@@ -82,7 +82,7 @@ void operate() {
       state = STATE_IDLE;
       break;
 
-    case STATE_CONTINOUS_FLASHING:
+    case STATE_CONTINUOUS_FLASHING:
       flashingTick();
       break;
   }
@@ -93,7 +93,7 @@ void operate() {
  */
 void startFlashingBpm(unsigned short bpm) {
   flashingPeriodMs = round(1000.0 / (bpm / 60.0));
-  state = STATE_CONTINOUS_FLASHING;
+  state = STATE_CONTINUOUS_FLASHING;
 }
 
 /**
@@ -101,7 +101,7 @@ void startFlashingBpm(unsigned short bpm) {
  */
 void startFlashingHz(unsigned char hz) {
   flashingPeriodMs = round(1000.0 / hz);
-  state = STATE_CONTINOUS_FLASHING;
+  state = STATE_CONTINUOUS_FLASHING;
 }
 
 /**

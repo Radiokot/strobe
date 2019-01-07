@@ -13,5 +13,5 @@ This sketch is running on the 5V Arduino Pro Mini. The HC-05 module is connected
 | -----|------|---------|---------|
 |Single flash|0x1|-|`0x1`|
 |Stop|0x2|-|`0x2`|
-|Continous flashing (Hz)|0x3|unsigned byte of Hz value|`0x3 0x5` — start flashing at 5 Hz frequency
-|Continous flashing (BPM)|0x4|2 bytes of unsigned short BMP value in **Little endian**|`0x4 0x4 0x1` — start flashing at 260 (0x104) BMP frequency|
+|Continuous flashing (Hz)|0x3|unsigned byte of Hz value|`0x3 0x5` — start flashing at 5 Hz frequency
+|Continuous flashing (BPM)|0x4|2 bytes of unsigned short BMP value in **Little endian**|`0x4 0x4 0x1` — start flashing at 260 (0x104) BMP frequency|
